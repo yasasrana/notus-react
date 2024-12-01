@@ -4,35 +4,34 @@ import React, { useEffect, useState } from "react";
 
 import CardSettings from "components/Cards/CardSettings.js";
 import CardProfile from "components/Cards/CardProfile.js";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "api/axios";
-import { Toaster,toast } from "react-hot-toast";
+import Select from 'react-select'
 import { DatePicker } from "react-rainbow-components";
 
-
-const loadDefaultCustomerObj = () => {
+const loadDefaultPawnObj = () => {
   return {
-    CustomerID:-1, // required|unique:customers,CustomerID|max:255
-    FullName: "", // required|max:255
-    Username:"",
-    NIC: "", // required|max:20
-    DOB: new Date(), // required|date
-    Gender: "Male", // required|max:10
-    StreetAddress: "", // required|max:255
-    City: "", // required|max:100
-    State: "", // required|max:100
-    ZipCode: "", // required|max:10
-    PrimaryPhoneNumber: "", // required|max:15
-    Email: "", // required|email|unique:customers,Email
-    DeliveryMethod: "", // required|max:50
-    EmergencyContactName: "", // required|max:255
-    EmergencyContactPhone: "", // required|max:15
-    password: "",
+    description: "", // required
+    category: "", // required
+    details: "", // required
+    DMR: "", // required
+    weight: 0, // required|number
+    quantity: 0, // required|number
+    market_value: 0.00, // required|number
+    payable_amount: 0.00, // required|number
+    loan_amount: 0.00, // required|number
+    interest_rate: 0.00, // required|number
+    pawn_date: new Date(), // required|date
+    due_date: new Date(), // required|date
+    service_charge: 0.00, // required|number
+    user_id: -1, // required|number
   };
 };
-
- const Settings=()=> {
-  const [customer, setCustomer] = useState(loadDefaultCustomerObj);
+export default function Payments() {
   const [customers, setCustomers] = useState([]);
+  const [scustomers, setsCustomers] = useState([]);
+  const [pawn, setPawn] = useState(loadDefaultPawnObj);
+
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -41,80 +40,75 @@ const loadDefaultCustomerObj = () => {
         color: red;
       }
     `;
+    getCustomers();
     document.head.appendChild(style);
     return () => {
       document.head.removeChild(style);
     };
   }, []);
 
-  const setCustomerDetails = (e, state) => {
-    setCustomer({ ...customer, [state]: e });
+
+  const setPawnDetails = (e, state) => {
+    setPawn({ ...pawn, [state]: e });
   };
 
   const clearall = () => {
-    setCustomer(loadDefaultCustomerObj);
+    setPawn(loadDefaultPawnObj);
   }
 
-  const validateCustomerData = (customer) => {
-    if (!customer.CustomerID) return "CustomerID is required.";
-    if (!customer.FullName) return "FullName is required.";
-    if (!customer.NIC) return "NIC is required.";
-    if (!customer.DOB) return "DOB is required.";
-    if (!customer.Gender) return "Gender is required.";
-    if (!customer.StreetAddress) return "StreetAddress is required.";
-    if (!customer.City) return "City is required.";
-    if (!customer.State) return "State is required.";
-    if (!customer.ZipCode) return "ZipCode is required.";
-    if (!customer.PrimaryPhoneNumber) return "PrimaryPhoneNumber is required.";
-    if (!customer.Email) return "Email is required.";
-    if (!customer.DeliveryMethod) return "DeliveryMethod is required.";
-    if (!customer.EmergencyContactName) return "EmergencyContactName is required.";
-    if (!customer.EmergencyContactPhone) return "EmergencyContactPhone is required.";
-    if (!customer.Username) return "Username is required.";
-    if (!customer.password) return "Password is required.";
+  const validatePawnData = (pawn) => {
+    if (!pawn.description) return "Description is required.";
+    if (!pawn.category) return "Category is required.";
+    if (!pawn.details) return "Details are required.";
+    if (!pawn.DMR) return "DMR is required.";
+    if (pawn.weight <= 0) return "Weight must be greater than 0.";
+    if (pawn.quantity <= 0) return "Quantity must be greater than 0.";
+    if (pawn.market_value <= 0) return "Market value must be greater than 0.";
+    if (pawn.payable_amount <= 0) return "Payable amount must be greater than 0.";
+    if (pawn.loan_amount <= 0) return "Loan amount must be greater than 0.";
+    if (pawn.interest_rate <= 0) return "Interest rate must be greater than 0.";
+    if (!pawn.pawn_date) return "Pawn date is required.";
+    if (!pawn.due_date) return "Due date is required.";
+    if (pawn.service_charge < 0) return "Service charge cannot be negative.";
+    if (pawn.user_id <= 0) return "User ID must be greater than 0.";
     return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationError = validateCustomerData(customer);
+    const validationError = validatePawnData(pawn);
     if (validationError) {
       toast.error(validationError);
       return;
-    }
-    const customerData = {
-      CustomerID: customer.CustomerID,
-      FullName: customer.FullName,
-      NIC: customer.NIC,
-      DOB: customer.DOB,
-      Gender: customer.Gender,
-      StreetAddress: customer.StreetAddress,
-      City: customer.City,
-      State: customer.State,
-      ZipCode: customer.ZipCode,
-      PrimaryPhoneNumber: customer.PrimaryPhoneNumber,
-      Email: customer.Email,
-      email: customer.Email,
-      DeliveryMethod: customer.DeliveryMethod,
-      EmergencyContactName: customer.EmergencyContactName,
-      EmergencyContactPhone: customer.EmergencyContactPhone,
-      name: customer.Username,
-      password: customer.password,
-    };
-  
-    console.log('yes2', customerData);
-  
+    }  
     const toastId = toast.loading("Saving...");
     try {
-      console.log('yes', customer);
+      console.log('yes', pawn);
       // props.changeLoader(true);
-      const response = await axios.post("/api/customers", customerData, {
+      const pawnData = {
+        description: pawn.description,
+        category: pawn.category,
+        details: pawn.details,
+        DMR: pawn.DMR,
+        weight: pawn.weight,
+        quantity: pawn.quantity,
+        market_value: pawn.market_value,
+        payable_amount: pawn.payable_amount,
+        loan_amount: pawn.loan_amount,
+        interest_rate: pawn.interest_rate,
+        pawn_date: pawn.pawn_date,
+        due_date: pawn.due_date,
+        service_charge: pawn.service_charge,
+        customer_id: pawn.user_id.value,
+      };
+
+      const response = await axios.post("/api/pawn-items", pawnData, {
         headers: { "Content-Type": "application/json" },
       });
       toast.dismiss(toastId); // Dismiss the loading toast
       toast.success("Saving Successful");
       //fetchScans(currentPage);
-      setCustomer(loadDefaultCustomerObj());
+      setPawn(loadDefaultPawnObj());
       //  props.changeLoader(false);
     } catch (error) {
       console.log(error)
@@ -123,25 +117,39 @@ const loadDefaultCustomerObj = () => {
     }
   };
 
+  const getCustomers = async () => {
+    try {
+      const response = await axios.get(`/api/customers`);
+      setCustomers(response.data);
 
-  
+      const options = response.data.map((customer) => ({
+        value: customer.CustomerID,
+        label: customer.FullName,
+      }));
+      setsCustomers(options);
+      //toast.success("Customer data loaded successfully");
+    } catch (error) {
+      console.error("There was an error fetching the customer data!", error);
+      toast.error("There was an error fetching the customer data!");
+    }
+  };
 
   return (
     <>
-    <Toaster />
+      <Toaster />
       <div className="flex flex-wrap">
         <div className="w-full lg:w-12/12 px-4">
           <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
             <div className="rounded-t bg-white mb-0 px-6 py-6">
               <div className="text-center flex justify-between">
-                <h6 className="text-blueGray-700 text-xl font-bold">Customer Registration</h6>
+                <h6 className="text-blueGray-700 text-xl font-bold">Pawn Payment</h6>
                 
               </div>
             </div>
             <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
               <form>
-                <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-                  Personal Information
+              <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
+                  Pawn Information
                 </h6>
                 <div className="flex flex-wrap">
                 <div className="w-full lg:w-6/12 px-4">
@@ -150,17 +158,15 @@ const loadDefaultCustomerObj = () => {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                      Full Name <span className="required-star">*</span>
+                      Customer <span className="required-star">*</span>
                       </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        placeholder="Employee Full Name"
-                        value={customer.FullName}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "FullName")
-                        }
+                      <Select options={scustomers} 
+                     
+                      onChange={(e) =>
+                        setPawnDetails(e, "user_id")
+                      }
                       />
+
                     </div>
                   </div>
                 
@@ -170,15 +176,40 @@ const loadDefaultCustomerObj = () => {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                        Username <span className="required-star">*</span>
+                        Market Value <span className="required-star">*</span>
                       </label>
                       <input
-                        type="text"
+                        type="number"
+                        min={0}
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        placeholder="Employee Username"
-                        value={customer.Username}
+                        value={pawn.market_value}
+                        onChange={(e) =>{
+                          const value = parseFloat(e.target.value);
+                          //if (value >= 0) {
+                            setPawnDetails(value, "market_value");
+                          //}
+                        }
+                        }
+                      />
+                    </div>
+                  </div>
+                 
+                  
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                     Payable Amount <span className="required-star">*</span>
+                      </label>
+                      <input
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        type="number"
+                        min={0}
+                        value={pawn.payable_amount}
                         onChange={(e) =>
-                          setCustomerDetails(e.target.value, "Username")
+                          setPawnDetails(e.target.value, "payable_amount")
                         }
                       />
                     </div>
@@ -188,16 +219,106 @@ const loadDefaultCustomerObj = () => {
                       <label
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
-                        
                       >
-                        Email address <span className="required-star">*</span>
+                      Description <span className="required-star">*</span>
                       </label>
                       <input
-                        type="email"
+                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                         type="text"
+                         value={pawn.description}
+                         onChange={(e) =>
+                           setPawnDetails(e.target.value, "description")
+                         }
+                       
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                      Loan amount <span className="required-star">*</span>
+                      </label>
+                      <input
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.Email}
+                        type="number"
+                        value={pawn.loan_amount}
                         onChange={(e) =>
-                          setCustomerDetails(e.target.value, "Email")
+                          setPawnDetails(e.target.value, "loan_amount")
+                        }
+                        
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                      Category <span className="required-star">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={pawn.category}
+                        onChange={(e) =>
+                          setPawnDetails(e.target.value, "category")
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                      Details
+                      </label>
+                      <input
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={pawn.details}
+                        onChange={(e) =>
+                          setPawnDetails(e.target.value, "details")
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                      Interest Rate <span className="required-star">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={pawn.interest_rate}
+                        onChange={(e) =>
+                          setPawnDetails(e.target.value, "interest_rate")
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                      DMR <span className="required-star">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={pawn.DMR}
+                        onChange={(e) =>
+                          setPawnDetails(e.target.value, "DMR")
                         }
                       />
                     </div>
@@ -209,14 +330,14 @@ const loadDefaultCustomerObj = () => {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                      NIC <span className="required-star">*</span>
+                      Weight <span className="required-star">*</span>
                       </label>
                       <input
-                        type="text"
+                        type="number"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.NIC}
+                        value={pawn.weight}
                         onChange={(e) =>
-                          setCustomerDetails(e.target.value, "NIC")
+                          setPawnDetails(e.target.value, "weight")
                         }
                       />
                     </div>
@@ -227,13 +348,50 @@ const loadDefaultCustomerObj = () => {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                      Date of Birth <span className="required-star">*</span>
+                      Quantity <span className="required-star">*</span>
                       </label>
+                      <input
+                        type="number"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={pawn.quantity}
+                        onChange={(e) =>
+                          setPawnDetails(e.target.value, "quantity")
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                      Service Charge <span className="required-star">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={pawn.service_charge}
+                        onChange={(e) =>
+                          setPawnDetails(e.target.value, "service_charge")
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                      Pawn Date <span className="required-star">*</span>
+                      </label>
+                     
                       <DatePicker
                         id="datePicker-1"
-                        value={customer.DOB}
+                        value={pawn.pawn_date}
                         onChange={(e) =>
-                          setCustomerDetails(e, "DOB")
+                          setPawnDetails(e, "pawn_date")
                         }
                         formatStyle="large"
                       />
@@ -244,229 +402,23 @@ const loadDefaultCustomerObj = () => {
                       <label
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
-                      >
-                      Gender <span className="required-star">*</span>
+                      > 
+                      Due Date <span className="required-star">*</span>
                       </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.Gender}
+                      <DatePicker
+                        id="datePicker-1"
+                        value={pawn.due_date}
                         onChange={(e) =>
-                          setCustomerDetails(e.target.value, "Gender")
+                          setPawnDetails(e, "due_date")
                         }
+                        formatStyle="large"
                       />
                     </div>
                   </div>
+
                   
                 </div>
 
-                <hr className="mt-6 border-b-1 border-blueGray-300" />
-
-                <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-                  Contact Information
-                </h6>
-                <div className="flex flex-wrap">
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Address <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.StreetAddress}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "StreetAddress")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Province <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.State}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "State")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-4/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        City <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.City}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "City")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-4/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Postal Code <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.ZipCode}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "ZipCode")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-4/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Phone Number <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.PrimaryPhoneNumber}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "PrimaryPhoneNumber")
-                        }
-                      />
-                    </div>
-                  </div>
-                 
-                </div>
-
-                <hr className="mt-6 border-b-1 border-blueGray-300" />
-
-                <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-                  Account Security
-                </h6>
-                <div className="flex flex-wrap">
-                  
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Password <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="password"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.password}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "password")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Confirm Password <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="password"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.password}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "password")
-                        }
-                      />
-                    </div>
-                  
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Delivery Method <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.DeliveryMethod}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "DeliveryMethod")
-                        }
-                      />
-                    </div>
-                  
-                  </div>
-                </div>
-
-                
-                <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-                  Emergency Contact
-                </h6>
-                <div className="flex flex-wrap">
-                  
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Contact Name <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.EmergencyContactName}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "EmergencyContactName")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                        Contact Phone Number <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={customer.EmergencyContactPhone}
-                        onChange={(e) =>
-                          setCustomerDetails(e.target.value, "EmergencyContactPhone")
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
                 <div className="flex flex-wrap  items-center">
                 <button className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button"
                  onClick={handleSubmit}
@@ -486,4 +438,3 @@ const loadDefaultCustomerObj = () => {
     </>
   );
 }
-export default Settings;

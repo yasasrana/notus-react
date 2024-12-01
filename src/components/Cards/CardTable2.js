@@ -5,23 +5,23 @@ import PropTypes from "prop-types";
 
 import TableDropdown from "components/Dropdowns/TableDropdown.js";
 import axios from "api/axios";
-const headers = ["itemNo","description","customer","category", "loan_amount", "payable_amount","pawn date","due date" ];
+const headers = ["CustomerNo","FullName","NIC","Gender", "PrimaryPhoneNumber", "DeliveryMethod","Email"];
 
- const CardTable =({ color })=> {
+ const CardTable2 =({ color })=> {
 
-  const [pawns, setPawns] = useState([]);
+  const [customers, setCustomers] = useState([]);
 
-  const getPawns = async () => {
+  const getCustomers = async () => {
     try {
-      const response = await axios.get("/api/pawn-items");
-      setPawns(response.data);
+      const response = await axios.get("/api/customers");
+      setCustomers(response.data);
     } catch (error) {
-      console.error("There was an error fetching the pawns!", error);
+      console.error("There was an error fetching the customers!", error);
     }
   };
 
   useEffect(() => {
-    getPawns();
+    getCustomers();
   }, []);
 
   return (
@@ -41,7 +41,7 @@ const headers = ["itemNo","description","customer","category", "loan_amount", "p
                   (color === "light" ? "text-blueGray-700" : "text-white")
                 }
               >
-                Pawns
+                Customers
               </h3>
             </div>
           </div>
@@ -68,7 +68,7 @@ const headers = ["itemNo","description","customer","category", "loan_amount", "p
               </tr>
             </thead>
             <tbody>
-            {pawns.map((pawn, index) => (
+            {customers.map((cus, index) => (
                 <tr key={index}>
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
                     <span
@@ -77,30 +77,28 @@ const headers = ["itemNo","description","customer","category", "loan_amount", "p
                         (color === "light" ? "text-blueGray-600" : "text-white")
                       }
                     >
-                      {pawn.itemNo}
+                      {cus.CustomerID}
                     </span>
                   </td>
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                    {pawn.description}
+                    {cus.FullName}
                   </td>
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                    {pawn.customer_id}
+                    {cus.NIC}
                   </td>
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                    {pawn.category}
+                    {cus.Gender}
                   </td>
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                    {pawn.loan_amount}
+                    {cus.PrimaryPhoneNumber}
                   </td>
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
-                    {pawn.payable_amount}
+                    {cus.DeliveryMethod}
                   </td>
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
-                    {pawn.pawn_date}
+                    {cus.Email}
                   </td>
-                  <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
-                    {pawn.due_date}
-                  </td>
+                  
                   <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
                     <TableDropdown />
                   </td>
@@ -115,12 +113,12 @@ const headers = ["itemNo","description","customer","category", "loan_amount", "p
     </>
   );
 }
-export default CardTable;
+export default CardTable2;
 
-CardTable.defaultProps = {
+CardTable2.defaultProps = {
   color: "light",
 };
 
-CardTable.propTypes = {
+CardTable2.propTypes = {
   color: PropTypes.oneOf(["light", "dark"]),
 };
