@@ -1,11 +1,23 @@
 /*eslint-disable*/
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import Footer from "components/Footers/Footer.js";
+import toast from "react-hot-toast";
 
 export default function Index() {
+
+  useEffect(() => {
+    
+    tos()
+    
+  }, []);
+
+  const tos =()=>{
+    toast.error("Access Denied");
+  }
+
   return (
     <>
       <IndexNavbar fixed />

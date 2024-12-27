@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 
-export default function Login() {
+const Login =()=> {
+
+
+
+  
+
+    useEffect(() => {
+    
+      tos()
+      
+    }, []);
+  
+    const tos =()=>{
+      toast.success("Login Successfull");
+    }
   return (
     <>
+    <Toaster/>
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-4/12 px-4">
@@ -118,3 +134,4 @@ export default function Login() {
     </>
   );
 }
+export default Login;

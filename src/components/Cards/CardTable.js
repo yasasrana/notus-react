@@ -5,9 +5,11 @@ import PropTypes from "prop-types";
 
 import TableDropdown from "components/Dropdowns/TableDropdown.js";
 import axios from "api/axios";
+import { FaRegFilePdf } from "react-icons/fa6";
+import { Button } from "react-rainbow-components";
 const headers = ["itemNo","description","customer","category", "loan_amount", "payable_amount","pawn date","due date" ];
 
- const CardTable =({ color })=> {
+ const CardTable =({ color ,cusRef,exportToPDF})=> {
 
   const [pawns, setPawns] = useState([]);
 
@@ -26,7 +28,7 @@ const headers = ["itemNo","description","customer","category", "loan_amount", "p
 
   return (
     <>
-      <div
+      <div ref={cusRef}
         className={
           "relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded " +
           (color === "light" ? "bg-white" : "bg-lightBlue-900 text-white")
@@ -46,6 +48,9 @@ const headers = ["itemNo","description","customer","category", "loan_amount", "p
             </div>
           </div>
         </div>
+          <Button className="pdfbtn" onClick={() => exportToPDF()}>
+          <FaRegFilePdf style={{ fontSize: "17px" }} /> Pdf
+          </Button>
         <div className="block w-full overflow-x-auto">
           {/* Projects table */}
           <table className="items-center w-full bg-transparent border-collapse">

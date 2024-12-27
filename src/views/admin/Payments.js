@@ -41,11 +41,16 @@ export default function Payments() {
       }
     `;
     getCustomers();
+    tos()
     document.head.appendChild(style);
     return () => {
       document.head.removeChild(style);
     };
   }, []);
+
+  const tos =()=>{
+    toast.error("Access Denied");
+  }
 
 
   const setPawnDetails = (e, state) => {
@@ -172,24 +177,17 @@ export default function Payments() {
                 
                   <div className="w-full lg:w-6/12 px-4">
                     <div className="relative w-full mb-3">
-                      <label
+                    <label
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                        Market Value <span className="required-star">*</span>
+                      Pawn Item <span className="required-star">*</span>
                       </label>
-                      <input
-                        type="number"
-                        min={0}
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.market_value}
-                        onChange={(e) =>{
-                          const value = parseFloat(e.target.value);
-                          //if (value >= 0) {
-                            setPawnDetails(value, "market_value");
-                          //}
-                        }
-                        }
+                      <Select options={scustomers} 
+                     
+                      onChange={(e) =>
+                        setPawnDetails(e, "user_id")
+                      }
                       />
                     </div>
                   </div>
@@ -220,11 +218,11 @@ export default function Payments() {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                      Description <span className="required-star">*</span>
+                      Amount <span className="required-star">*</span>
                       </label>
                       <input
                          className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                         type="text"
+                         type="number"
                          value={pawn.description}
                          onChange={(e) =>
                            setPawnDetails(e.target.value, "description")
@@ -239,11 +237,11 @@ export default function Payments() {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                      Loan amount <span className="required-star">*</span>
+                     Payment Method <span className="required-star">*</span>
                       </label>
                       <input
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        type="number"
+                        type="text"
                         value={pawn.loan_amount}
                         onChange={(e) =>
                           setPawnDetails(e.target.value, "loan_amount")
@@ -258,7 +256,7 @@ export default function Payments() {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                      Category <span className="required-star">*</span>
+                      Notes <span className="required-star">*</span>
                       </label>
                       <input
                         type="text"
@@ -269,122 +267,14 @@ export default function Payments() {
                         }
                       />
                     </div>
-                  </div>
+                  </div> 
                   <div className="w-full lg:w-6/12 px-4">
                     <div className="relative w-full mb-3">
                       <label
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                      Details
-                      </label>
-                      <input
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.details}
-                        onChange={(e) =>
-                          setPawnDetails(e.target.value, "details")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                      Interest Rate <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.interest_rate}
-                        onChange={(e) =>
-                          setPawnDetails(e.target.value, "interest_rate")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                      DMR <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.DMR}
-                        onChange={(e) =>
-                          setPawnDetails(e.target.value, "DMR")
-                        }
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                      Weight <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.weight}
-                        onChange={(e) =>
-                          setPawnDetails(e.target.value, "weight")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                      Quantity <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.quantity}
-                        onChange={(e) =>
-                          setPawnDetails(e.target.value, "quantity")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                      Service Charge <span className="required-star">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.service_charge}
-                        onChange={(e) =>
-                          setPawnDetails(e.target.value, "service_charge")
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      >
-                      Pawn Date <span className="required-star">*</span>
+                      Payment Date <span className="required-star">*</span>
                       </label>
                      
                       <DatePicker
@@ -397,26 +287,6 @@ export default function Payments() {
                       />
                     </div>
                   </div>
-                  <div className="w-full lg:w-6/12 px-4">
-                    <div className="relative w-full mb-3">
-                      <label
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                        htmlFor="grid-password"
-                      > 
-                      Due Date <span className="required-star">*</span>
-                      </label>
-                      <DatePicker
-                        id="datePicker-1"
-                        value={pawn.due_date}
-                        onChange={(e) =>
-                          setPawnDetails(e, "due_date")
-                        }
-                        formatStyle="large"
-                      />
-                    </div>
-                  </div>
-
-                  
                 </div>
 
                 <div className="flex flex-wrap  items-center">
