@@ -16,6 +16,7 @@ export default function Navbar(props) {
             <Link
               className="text-white text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase"
               to="/"
+              style={{position: 'relative',left: '154%',fontSize: '40px'}}
             >
               Pawn Master
             </Link>

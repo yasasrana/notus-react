@@ -36,11 +36,11 @@ export default function Admin() {
             <Route path="/tables" element={<Tables />} />
             <Route path="/tables" element={<Tables />} />
             <Route path="/transactions" element={<Transactions />} />
-            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
           </> : <>
-          <Route path="/dashboard" element={<Dashboard />} />
+          
             <Route path="/transactions" element={<Transactions2 />} />
-            <Route path="/admin" element={<Navigate to="/admin/transactions" replace />} />
+            <Route path="*" element={<Navigate to="/admin/transactions" replace />} />
           </>}
            
           </Routes>
