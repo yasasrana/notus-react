@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import NotificationDropdown from "components/Dropdowns/NotificationDropdown.js";
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
 
-export default function Sidebar() {
+export default function Sidebar2() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
   return (
     <>
@@ -79,120 +79,11 @@ export default function Sidebar() {
             <hr className="my-4 md:min-w-full" />
             {/* Heading */}
             <h6 className="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
-              Admin Layout Pages
+              Customer Pages
             </h6>
             {/* Navigation */}
 
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
-              <li className="items-center">
-                <Link
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (window.location.href.indexOf("/admin/dashboard") !== -1
-                      ? "text-lightBlue-500 hover:text-lightBlue-600"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                  to="/admin/dashboard"
-                >
-                  <i
-                    className={
-                      "fas fa-tv mr-2 text-sm " +
-                      (window.location.href.indexOf("/admin/dashboard") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  Dashboard
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (window.location.href.indexOf("/admin/settings") !== -1
-                      ? "text-lightBlue-500 hover:text-lightBlue-600"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                  to="/admin/settings"
-                >
-                  <i
-                    className={
-                      "fas fa-user mr-2 text-sm " +
-                      (window.location.href.indexOf("/admin/settings") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                 Customer Registration
-                </Link>
-              </li>
-              <li className="items-center">
-                <Link
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (window.location.href.indexOf("/admin/pawn") !== -1
-                      ? "text-lightBlue-500 hover:text-lightBlue-600"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                  to="/admin/pawn"
-                >
-                  <i
-                    className={
-                      "fas fa-coins mr-2 text-sm " +
-                      (window.location.href.indexOf("/admin/pawn") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                 Pawn Registration
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (window.location.href.indexOf("/admin/tables") !== -1
-                      ? "text-lightBlue-500 hover:text-lightBlue-600"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                  to="/admin/tables"
-                >
-                  <i
-                    className={
-                      "fas fa-table mr-2 text-sm " +
-                      (window.location.href.indexOf("/admin/tables") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  Inventory
-                </Link>
-              </li>
-             
-
-              <li className="items-center">
-                <Link
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (window.location.href.indexOf("/admin/payments") !== -1
-                      ? "text-lightBlue-500 hover:text-lightBlue-600"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                  to="/admin/payments"
-                >
-                  <i
-                    className={
-                      "fas fa-money-bill-wave mr-2 text-sm " +
-                      (window.location.href.indexOf("/admin/payments") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  Payments
-                </Link>
-              </li>
               <li className="items-center">
                 <Link
                   className={
@@ -214,7 +105,6 @@ export default function Sidebar() {
                   Transactions
                 </Link>
               </li>
-              
             </ul>
 
             
