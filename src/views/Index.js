@@ -10,13 +10,10 @@ export default function Index() {
 
   useEffect(() => {
     
-    tos()
     
   }, []);
 
-  const tos =()=>{
-    toast.error("Access Denied");
-  }
+  
 
   return (
     <>

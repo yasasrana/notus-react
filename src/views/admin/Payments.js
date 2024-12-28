@@ -11,26 +11,22 @@ import { DatePicker } from "react-rainbow-components";
 
 const loadDefaultPawnObj = () => {
   return {
-    description: "", // required
-    category: "", // required
-    details: "", // required
-    DMR: "", // required
-    weight: 0, // required|number
-    quantity: 0, // required|number
-    market_value: 0.00, // required|number
-    payable_amount: 0.00, // required|number
-    loan_amount: 0.00, // required|number
-    interest_rate: 0.00, // required|number
-    pawn_date: new Date(), // required|date
-    due_date: new Date(), // required|date
-    service_charge: 0.00, // required|number
-    user_id: -1, // required|number
+    pawn_item_id: "", // required|exists:pawn_items,id
+    amount: 0, // required|numeric
+    payment_method: "", // required|string|max:255
+    payment_date: new Date(), // required|date
+    transaction_reference: "", // nullable|string|max:255
+    notes: "", // nullable|string, // required|exists:users,id
   };
 };
+
 export default function Payments() {
   const [customers, setCustomers] = useState([]);
   const [scustomers, setsCustomers] = useState([]);
   const [pawn, setPawn] = useState(loadDefaultPawnObj);
+  const [pawns, setPawns] = useState([]);
+  const [spawns, setsPawns] = useState([]);
+  const [user, setUser] = useState('');
 
 
   useEffect(() => {
@@ -41,43 +37,35 @@ export default function Payments() {
       }
     `;
     getCustomers();
-    tos()
     document.head.appendChild(style);
     return () => {
       document.head.removeChild(style);
     };
   }, []);
 
-  const tos =()=>{
-    toast.error("Access Denied");
-  }
+  
 
 
   const setPawnDetails = (e, state) => {
     setPawn({ ...pawn, [state]: e });
+    console.log(pawn);
   };
 
   const clearall = () => {
     setPawn(loadDefaultPawnObj);
+    setUser('');
   }
 
   const validatePawnData = (pawn) => {
-    if (!pawn.description) return "Description is required.";
-    if (!pawn.category) return "Category is required.";
-    if (!pawn.details) return "Details are required.";
-    if (!pawn.DMR) return "DMR is required.";
-    if (pawn.weight <= 0) return "Weight must be greater than 0.";
-    if (pawn.quantity <= 0) return "Quantity must be greater than 0.";
-    if (pawn.market_value <= 0) return "Market value must be greater than 0.";
-    if (pawn.payable_amount <= 0) return "Payable amount must be greater than 0.";
-    if (pawn.loan_amount <= 0) return "Loan amount must be greater than 0.";
-    if (pawn.interest_rate <= 0) return "Interest rate must be greater than 0.";
-    if (!pawn.pawn_date) return "Pawn date is required.";
-    if (!pawn.due_date) return "Due date is required.";
-    if (pawn.service_charge < 0) return "Service charge cannot be negative.";
-    if (pawn.user_id <= 0) return "User ID must be greater than 0.";
+    if (!pawn.pawn_item_id) return "Pawn item ID is required and must exist.";
+    if ( pawn.amount <= 0) return "Amount is required and must be a positive number.";
+    if (!pawn.payment_method || typeof pawn.payment_method !== 'string' || pawn.payment_method.length > 255) return "Payment method is required and must be a string with a maximum length of 255 characters.";
+    if (!pawn.payment_date || isNaN(new Date(pawn.payment_date).getTime())) return "Payment date is required and must be a valid date.";
+    if (pawn.transaction_reference && typeof pawn.transaction_reference !== 'string') return "Transaction reference must be a string.";
+    if (pawn.notes && typeof pawn.notes !== 'string') return "Notes must be a string.";
     return null;
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,40 +73,33 @@ export default function Payments() {
     if (validationError) {
       toast.error(validationError);
       return;
-    }  
+    }
+    pawn.pawn_item_id = pawn.pawn_item_id.value;
     const toastId = toast.loading("Saving...");
     try {
       console.log('yes', pawn);
       // props.changeLoader(true);
       const pawnData = {
-        description: pawn.description,
-        category: pawn.category,
-        details: pawn.details,
-        DMR: pawn.DMR,
-        weight: pawn.weight,
-        quantity: pawn.quantity,
-        market_value: pawn.market_value,
-        payable_amount: pawn.payable_amount,
-        loan_amount: pawn.loan_amount,
-        interest_rate: pawn.interest_rate,
-        pawn_date: pawn.pawn_date,
-        due_date: pawn.due_date,
-        service_charge: pawn.service_charge,
-        customer_id: pawn.user_id.value,
+        pawn_item_id: pawn.pawn_item_id,
+        amount: pawn.amount,
+        payment_method: pawn.payment_method,
+        payment_date: pawn.payment_date,
+        transaction_reference: pawn.transaction_reference,
+        notes: pawn.notes,
       };
-
-      const response = await axios.post("/api/pawn-items", pawnData, {
+  
+      const response = await axios.post("/api/payment-transactions", pawnData, {
         headers: { "Content-Type": "application/json" },
       });
       toast.dismiss(toastId); // Dismiss the loading toast
       toast.success("Saving Successful");
       //fetchScans(currentPage);
-      setPawn(loadDefaultPawnObj());
+      clearall();
       //  props.changeLoader(false);
     } catch (error) {
-      console.log(error)
-      toast.dismiss(toastId); 
-      toast.error("Error",error);
+      console.log(error);
+      toast.dismiss(toastId);
+      toast.error("Error", error);
     }
   };
 
@@ -138,6 +119,29 @@ export default function Payments() {
       toast.error("There was an error fetching the customer data!");
     }
   };
+  const getPawnItems = async (customerId) => {
+    try {
+      const response = await axios.get(`/api/customers/${customerId}/pawn-items`);
+      setPawns(response.data);
+      const options = response.data.map((pawn) => ({
+        value: pawn.id,
+        label: pawn.itemNo +' - '+ pawn.description,
+        data: pawn
+      }));
+      setsPawns(options);
+      toast.success("Pawn items loaded successfully");
+    } catch (error) {
+      console.error("There was an error fetching the pawn items!", error);
+      toast.error("There was an error fetching the pawn items!");
+    }
+  };
+
+  const checkpawns = (e) => { 
+    setPawn(loadDefaultPawnObj);
+    setUser(e);
+    getPawnItems(e.value);
+  }
+  
 
   return (
     <>
@@ -165,11 +169,9 @@ export default function Payments() {
                       >
                       Customer <span className="required-star">*</span>
                       </label>
-                      <Select options={scustomers} 
-                     
-                      onChange={(e) =>
-                        setPawnDetails(e, "user_id")
-                      }
+                      <Select
+                      value={user}
+                      onChange={(e)=>checkpawns(e)} options={scustomers} 
                       />
 
                     </div>
@@ -183,10 +185,11 @@ export default function Payments() {
                       >
                       Pawn Item <span className="required-star">*</span>
                       </label>
-                      <Select options={scustomers} 
+                      <Select value={pawn.pawn_item_id} options={spawns} 
                      
-                      onChange={(e) =>
-                        setPawnDetails(e, "user_id")
+                      onChange={(e) =>{
+                        setPawnDetails(e, "pawn_item_id")
+                      }
                       }
                       />
                     </div>
@@ -203,9 +206,9 @@ export default function Payments() {
                       </label>
                       <input
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        type="number"
-                        min={0}
-                        value={pawn.payable_amount}
+                        disabled
+                        style={{backgroundColor: 'rgb(227 227 227)'}}
+                        value={ parseFloat(pawn?.pawn_item_id?.data?.payable_amount ?? 0).toFixed(2)}
                         onChange={(e) =>
                           setPawnDetails(e.target.value, "payable_amount")
                         }
@@ -223,9 +226,9 @@ export default function Payments() {
                       <input
                          className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                          type="number"
-                         value={pawn.description}
+                         value={pawn.amount}
                          onChange={(e) =>
-                           setPawnDetails(e.target.value, "description")
+                           setPawnDetails(e.target.value, "amount")
                          }
                        
                       />
@@ -242,9 +245,9 @@ export default function Payments() {
                       <input
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                         type="text"
-                        value={pawn.loan_amount}
+                        value={pawn.payment_method}
                         onChange={(e) =>
-                          setPawnDetails(e.target.value, "loan_amount")
+                          setPawnDetails(e.target.value, "payment_method")
                         }
                         
                       />
@@ -261,9 +264,9 @@ export default function Payments() {
                       <input
                         type="text"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        value={pawn.category}
+                        value={pawn.notes}
                         onChange={(e) =>
-                          setPawnDetails(e.target.value, "category")
+                          setPawnDetails(e.target.value, "notes")
                         }
                       />
                     </div>
@@ -279,9 +282,9 @@ export default function Payments() {
                      
                       <DatePicker
                         id="datePicker-1"
-                        value={pawn.pawn_date}
+                        value={pawn.payment_date}
                         onChange={(e) =>
-                          setPawnDetails(e, "pawn_date")
+                          setPawnDetails(e, "payment_date")
                         }
                         formatStyle="large"
                       />
